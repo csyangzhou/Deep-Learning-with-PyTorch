@@ -35,7 +35,7 @@ def main():
     optimizer = optim.Adam(model.parameters(), lr=1e-3)
     print(model)
 
-    for epoch in range(100):
+    for epoch in range(1000):
         # train
         model.train()
         for batchidx, (x, label) in enumerate(cifar_train):
