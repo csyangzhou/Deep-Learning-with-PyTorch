@@ -35,11 +35,18 @@ def main():
     optimizer = optim.Adam(model.parameters(), lr=1e-3)
     print(model)
 
-    for epoch in range(10):
+    for epoch in range(100):
+        # train
         model.train()
         for batchidx, (x, label) in enumerate(cifar_train):
+            # [b, 3, 32, 32]
+            # [b]
             x, label = x.to(device), label.to(device)
+
             logits = model(x)
+            # logits: [b, 10]
+            # label: [b]
+            # loss:tensor scalar
             loss = criteon(logits, label)
 
             # backprop
@@ -54,8 +61,13 @@ def main():
             total_correct = 0
             total_num = 0
             for x, label in cifar_test:
+                # [b, 3, 32, 32]
+                # [b]
                 x, label = x.to(device), label.to(device)
+
+                # [b, 10]
                 logits = model(x)
+                # [b]
                 pred = logits.argmax(dim=1)
                 correct = torch.eq(pred, label).float().sum().item()
                 total_correct += correct
