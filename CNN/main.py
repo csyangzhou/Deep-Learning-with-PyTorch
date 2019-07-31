@@ -5,12 +5,14 @@ from torchvision import transforms
 from torch import nn, optim
 
 from lenet5 import Lenet5
+from resnet import ResNet18
+
 
 def main():
     batchsz = 128
 
     cifar_train = datasets.CIFAR10('cifar', True, transform=transforms.Compose([
-        transforms.Resize((32,32)),
+        transforms.Resize((32, 32)),
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.485, 0.456, 0.406],
                              std=[0.229, 0.224, 0.225])
@@ -29,7 +31,8 @@ def main():
     print('x:', x.shape, 'label:', label.shape)
 
     device = torch.device('cuda')
-    model = Lenet5().to(device)
+    # model = Lenet5().to(device)
+    model = ResNet18().to(device)
 
     criteon = nn.CrossEntropyLoss().to(device)
     optimizer = optim.Adam(model.parameters(), lr=1e-3)
@@ -53,6 +56,7 @@ def main():
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
+
         print(epoch, 'loss', loss.item())
 
         model.eval()
@@ -69,6 +73,7 @@ def main():
                 logits = model(x)
                 # [b]
                 pred = logits.argmax(dim=1)
+                # [b] vs [b] => scalar tensor
                 correct = torch.eq(pred, label).float().sum().item()
                 total_correct += correct
                 total_num += x.size(0)
